@@ -321,3 +321,41 @@ function renderGoals(){
 }
 
 init();
+
+// Load saved data on page load
+document.addEventListener("DOMContentLoaded", () => {
+  const savedTransactions = JSON.parse(localStorage.getItem("transactions")) || [];
+  savedTransactions.forEach(addTransactionToTable);
+});
+
+// Add transaction and save
+function addTransaction() {
+  const amount = document.getElementById("amount").value;
+  const type = document.getElementById("type").value;
+  const category = document.getElementById("category").value;
+  const payment = document.getElementById("payment").value;
+  const date = document.getElementById("date").value;
+  const note = document.getElementById("note").value;
+
+  const transaction = { amount, type, category, payment, date, note };
+  
+  addTransactionToTable(transaction);
+
+  // Save to local storage
+  const transactions = JSON.parse(localStorage.getItem("transactions")) || [];
+  transactions.push(transaction);
+  localStorage.setItem("transactions", JSON.stringify(transactions));
+}
+
+function addTransactionToTable(transaction) {
+  const table = document.getElementById("transactions");
+  const row = table.insertRow();
+  row.innerHTML = `
+    <td>${transaction.amount}</td>
+    <td>${transaction.type}</td>
+    <td>${transaction.category}</td>
+    <td>${transaction.payment}</td>
+    <td>${transaction.date}</td>
+    <td>${transaction.note}</td>
+  `;
+}
