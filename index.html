@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SmartSpend — Student Budget Tracker</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Poppins", sans-serif;
+      background-color: #f4f6f9; /* Light background */
+      color: #222; /* Dark readable text */
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 220px;
+      background-color: #00b894; /* Mint green */
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 20px;
+    }
+    .sidebar h2 {
+      margin-bottom: 30px;
+    }
+    .sidebar button {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 16px;
+      margin: 10px 0;
+      cursor: pointer;
+      width: 100%;
+      text-align: left;
+      padding: 10px 20px;
+      border-radius: 8px;
+      transition: background 0.3s;
+    }
+    .sidebar button:hover,
+    .sidebar button.active {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Main content */
+    .main {
+      flex: 1;
+      padding: 20px 40px;
+      overflow-y: auto;
+      background-color: white;
+      border-radius: 20px 0 0 20px;
+    }
+
+    h1 {
+      color: #00b894;
+    }
+
+    /* Card style */
+    .card {
+      background: #f9f9f9;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      padding: 15px 20px;
+      margin-bottom: 20px;
+    }
+
+    /* Inputs and buttons */
+    input, select {
+      padding: 8px;
+      margin: 6px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      outline: none;
+    }
+
+    button.action {
+      background-color: #00b894;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 16px;
+      cursor: pointer;
+    }
+    button.action:hover {
+      background-color: #019870;
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <h2>💸 SmartSpend</h2>
+    <button class="active" onclick="showSection('dashboard')">Dashboard</button>
+    <button onclick="showSection('transactions')">Transactions</button>
+    <button onclick="showSection('budgets')">Budgets</button>
+    <button onclick="showSection('insights')">Insights</button>
+    <button onclick="showSection('goals')">Goals</button>
+  </div>
+
+  <div class="main">
+    <!-- Dashboard -->
+    <div id="dashboard" class="section">
+      <h1>Dashboard</h1>
+      <div class="card">
+        <h3>Current Balance</h3>
+        <p>₹0 — Saved this month: ₹0</p>
+      </div>
+      <div class="card">
+        <h3>Monthly Budget</h3>
+        <p>Set your budget to start tracking.</p>
+      </div>
+    </div>
+
+    <!-- Transactions -->
+    <div id="transactions" class="section hidden">
+      <h1>Transactions</h1>
+      <div class="card">
+        <label>Amount (₹)</label>
+        <input type="number" id="amount" placeholder="Enter amount" />
+        <select id="type">
+          <option>Expense</option>
+          <option>Income</option>
+        </select>
+        <select id="category">
+          <option>Food</option>
+          <option>Transport</option>
+          <option>Studies</option>
+          <option>Rent</option>
+          <option>Entertainment</option>
+          <option>Misc</option>
+        </select>
+        <select id="method">
+          <option>Cash</option>
+          <option>UPI</option>
+          <option>Card</option>
+        </select>
+        <input type="date" id="date" />
+        <button class="action" onclick="addTransaction()">Add</button>
+      </div>
+      <div class="card">
+        <h3>All Transactions</h3>
+        <ul id="transactionList"></ul>
+      </div>
+    </div>
+
+    <!-- Budgets -->
+    <div id="budgets" class="section hidden">
+      <h1>Budgets</h1>
+      <div class="card">
+        <label>Set Monthly Budget (₹)</label>
+        <input type="number" id="budgetInput" placeholder="Enter your budget" />
+        <button class="action" onclick="setBudget()">Save</button>
+      </div>
+      <div class="card">
+        <p id="budgetText">No budget set yet.</p>
+      </div>
+    </div>
+
+    <!-- Insights -->
+    <div id="insights" class="section hidden">
+      <h1>Insights</h1>
+      <p>Charts & analytics will appear here soon 📊</p>
+    </div>
+
+    <!-- Goals -->
+    <div id="goals" class="section hidden">
+      <h1>Goals</h1>
+      <div class="card">
+        <label>Goal Name</label>
+        <input type="text" id="goalName" placeholder="e.g. Buy phone" />
+        <label>Target Amount (₹)</label>
+        <input type="number" id="goalTarget" placeholder="10000" />
+        <button class="action" onclick="addGoal()">Add Goal</button>
+      </div>
+      <div class="card">
+        <ul id="goalList"></ul>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showSection(id) {
+      document.querySelectorAll(".section").forEach(sec => sec.classList.add("hidden"));
+      document.getElementById(id).classList.remove("hidden");
+      document.querySelectorAll(".sidebar button").forEach(btn => btn.classList.remove("active"));
+      event.target.classList.add("active");
+    }
+
+    let transactions = [];
+    let budget = 0;
+    let goals = [];
+
+    function addTransaction() {
+      const amount = document.getElementById("amount").value;
+      const type = document.getElementById("type").value;
+      const category = document.getElementById("category").value;
+      const method = document.getElementById("method").value;
+      const date = document.getElementById("date").value;
+
+      if (!amount || !date) return alert("Please fill all fields");
+
+      const entry = { amount, type, category, method, date };
+      transactions.push(entry);
+      renderTransactions();
+    }
+
+    function renderTransactions() {
+      const list = document.getElementById("transactionList");
+      list.innerHTML = "";
+      transactions.forEach((t, i) => {
+        const li = document.createElement("li");
+        li.textContent = `${t.type}: ₹${t.amount} on ${t.category} (${t.method}) — ${t.date}`;
+        list.appendChild(li);
+      });
+    }
+
+    function setBudget() {
+      budget = document.getElementById("budgetInput").value;
+      document.getElementById("budgetText").textContent = `Monthly budget set to ₹${budget}`;
+    }
+
+    function addGoal() {
+      const name = document.getElementById("goalName").value;
+      const target = document.getElementById("goalTarget").value;
+      if (!name || !target) return alert("Please enter both fields");
+      goals.push({ name, target });
+      renderGoals();
+    }
+
+    function renderGoals() {
+      const list = document.getElementById("goalList");
+      list.innerHTML = "";
+      goals.forEach(g => {
+        const li = document.createElement("li");
+        li.textContent = `${g.name} — Target ₹${g.target}`;
+        list.appendChild(li);
+      });
+    }
+  </script>
+</body>
+</html>
