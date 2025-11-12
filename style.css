@@ -1,0 +1,59 @@
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: #f4f6f9;
+  color: #222;
+  margin: 0;
+  padding: 0;
+}
+
+header {
+  background-color: #0078ff;
+  color: white;
+  text-align: center;
+  padding: 1rem;
+}
+
+nav {
+  display: flex;
+  justify-content: center;
+  background-color: #222;
+}
+
+nav button {
+  background: none;
+  color: white;
+  border: none;
+  padding: 1rem;
+  cursor: pointer;
+}
+
+nav button:hover {
+  background-color: #0078ff;
+}
+
+main {
+  padding: 2rem;
+}
+
+section {
+  display: none;
+}
+
+section.active {
+  display: block;
+}
+
+form input, form select, form button {
+  margin: 0.5rem;
+  padding: 0.5rem;
+}
+
+footer {
+  background-color: #222;
+  color: white;
+  text-align: center;
+  padding: 1rem;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+}
