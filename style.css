@@ -121,3 +121,82 @@ canvas{background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,2
 
 /* toast */
 .toast{position:fixed;right:20px;bottom:20px;background:#051217;padding:10px 14px;border-radius:8px;border:1px solid rgba(255,255,255,0.04)}
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  display: flex;
+  height: 100vh;
+  background: #f9f9f9;
+  color: #222;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 220px;
+  background-color: #e6f7f5;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border-right: 2px solid #d2f0ed;
+}
+
+.sidebar h2 {
+  color: #00796b;
+  text-align: center;
+}
+
+.sidebar button {
+  background: #c0f2eb;
+  border: none;
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.sidebar button:hover {
+  background: #9de0d8;
+}
+
+/* Main */
+.main {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.page {
+  display: none;
+}
+
+.page.active {
+  display: block;
+}
+
+input, select, button {
+  margin: 5px;
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+button {
+  background: #00796b;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #00695c;
+}
+
+canvas {
+  background: white;
+  padding: 10px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  max-width: 600px;
+}
