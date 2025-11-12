@@ -359,3 +359,30 @@ function addTransactionToTable(transaction) {
     <td>${transaction.note}</td>
   `;
 }
+
+function login() {
+  const username = document.getElementById("username").value;
+  const password = document.getElementById("password").value;
+
+  const storedUser = JSON.parse(localStorage.getItem("user"));
+
+  if (!storedUser) {
+    // First-time: create account
+    localStorage.setItem("user", JSON.stringify({ username, password }));
+    alert("Account created. Next time, log in!");
+    document.getElementById("login-container").style.display = "none";
+    document.getElementById("app").style.display = "block";
+  } else if (storedUser.username === username && storedUser.password === password) {
+    document.getElementById("login-container").style.display = "none";
+    document.getElementById("app").style.display = "block";
+  } else {
+    alert("Invalid credentials!");
+  }
+}
+document.addEventListener("DOMContentLoaded", () => {
+  const user = localStorage.getItem("user");
+  if (user) {
+    document.getElementById("login-container").style.display = "none";
+    document.getElementById("app").style.display = "block";
+  }
+});
