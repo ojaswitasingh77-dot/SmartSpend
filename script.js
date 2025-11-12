@@ -386,3 +386,101 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("app").style.display = "block";
   }
 });
+
+let transactions = JSON.parse(localStorage.getItem("transactions")) || [];
+let budget = parseFloat(localStorage.getItem("budget")) || 0;
+
+function login() {
+  const username = document.getElementById("username").value;
+  const password = document.getElementById("password").value;
+  const storedUser = JSON.parse(localStorage.getItem("user"));
+
+  if (!storedUser) {
+    localStorage.setItem("user", JSON.stringify({ username, password }));
+    alert("Account created. Please login again.");
+  } else if (storedUser.username === username && storedUser.password === password) {
+    document.getElementById("login-container").style.display = "none";
+    document.getElementById("app").style.display = "block";
+    updateDashboard();
+    renderCharts();
+  } else {
+    alert("Invalid credentials!");
+  }
+}
+
+function addTransaction() {
+  const amount = parseFloat(document.getElementById("amount").value);
+  const type = document.getElementById("type").value;
+  const category = document.getElementById("category").value;
+
+  if (!amount) return alert("Enter amount");
+
+  transactions.push({ amount, type, category, date: new Date() });
+  localStorage.setItem("transactions", JSON.stringify(transactions));
+  renderTransactions();
+  updateDashboard();
+  renderCharts();
+}
+
+function renderTransactions() {
+  const list = document.getElementById("transaction-list");
+  list.innerHTML = "";
+  transactions.forEach(t => {
+    const li = document.createElement("li");
+    li.textContent = `${t.type}: ₹${t.amount} (${t.category})`;
+    list.appendChild(li);
+  });
+}
+
+function setBudget() {
+  budget = parseFloat(document.getElementById("budget").value);
+  localStorage.setItem("budget", budget);
+  document.getElementById("budget-display").textContent = budget;
+  updateDashboard();
+}
+
+function updateDashboard() {
+  const income = transactions.filter(t => t.type === "Income").reduce((a,b)=>a+b.amount,0);
+  const expense = transactions.filter(t => t.type === "Expense").reduce((a,b)=>a+b.amount,0);
+  const saved = income - expense;
+  const balance = budget - expense;
+
+  document.getElementById("current-balance").textContent = balance.toFixed(2);
+  document.getElementById("total-saved").textContent = saved.toFixed(2);
+}
+
+function showSection(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if (id === 'insights') renderCharts();
+}
+
+function renderCharts() {
+  const ctx1 = document.getElementById('dashboardChart').getContext('2d');
+  const ctx2 = document.getElementById('insightChart').getContext('2d');
+  const expenseData = transactions.filter(t => t.type === "Expense");
+
+  const categories = [...new Set(expenseData.map(t => t.category))];
+  const values = categories.map(cat => expenseData.filter(t => t.category === cat).reduce((a,b)=>a+b.amount,0));
+
+  new Chart(ctx1, {
+    type: 'bar',
+    data: { labels: categories, datasets: [{ label: 'Expenses by Category', data: values, backgroundColor: '#4db6ac' }] },
+  });
+
+  new Chart(ctx2, {
+    type: 'pie',
+    data: { labels: categories, datasets: [{ label: 'Expenses Share', data: values, backgroundColor: ['#26a69a','#80cbc4','#b2dfdb','#004d40','#00796b'] }] },
+  });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const user = localStorage.getItem("user");
+  if (user) {
+    document.getElementById("login-container").style.display = "none";
+    document.getElementById("app").style.display = "block";
+    renderTransactions();
+    updateDashboard();
+    renderCharts();
+  }
+});
