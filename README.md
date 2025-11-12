@@ -1,0 +1,2 @@
+# SmartSpend
+A budget helper 
